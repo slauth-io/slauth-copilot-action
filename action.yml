@@ -1,0 +1,14 @@
+name: 'IAM Copilot'
+description: 'Slauth IAM Copilot to automatically generate policies based on end-to-end tests on GitHub Actions'
+author: 'Slauth'
+inputs:
+  slauth_token:
+    required: true
+    description: 'Token for your Slauth account'
+  run:
+    required: true
+    description: 'The end-to-end test to run'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
+  post: 'dist/index.js'
