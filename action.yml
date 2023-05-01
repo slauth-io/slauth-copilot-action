@@ -1,11 +1,17 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: 'IAM Copilot'
+description: 'Slauth IAM Copilot to automatically generate policies based on end-to-end tests on GitHub Actions'
+author: 'Slauth'
 inputs:
-  milliseconds: # change this
+  slauth_token:
     required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+    description: 'Token for your Slauth account'
+  slauth_project_id:
+    required: true
+    description: 'The ID of your project'
+  run:
+    required: true
+    description: 'The end-to-end test to run'
 runs:
   using: 'node16'
   main: 'dist/index.js'
+  post: 'dist/index.js'
