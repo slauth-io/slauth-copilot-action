@@ -1,25 +1,14 @@
-import {wait} from '../src/wait'
 import * as process from 'process'
 import * as cp from 'child_process'
 import * as path from 'path'
 import {expect, test} from '@jest/globals'
 
-test('throws invalid number', async () => {
-  const input = parseInt('foo', 10)
-  await expect(wait(input)).rejects.toThrow('milliseconds not a number')
-})
-
-test('wait 500 ms', async () => {
-  const start = new Date()
-  await wait(500)
-  const end = new Date()
-  var delta = Math.abs(end.getTime() - start.getTime())
-  expect(delta).toBeGreaterThan(450)
-})
-
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
-  process.env['INPUT_MILLISECONDS'] = '500'
+  process.env['INPUT_SLAUTH_TOKEN'] =
+    'sla_eyJhbGciOiJIUzI1NiJ9.eyJyb2xlIjoiYXV0aGVudGljYXRlZCIsImVtYWlsIjoiam9hb0BzbGF1dGguaW8iLCJzdWIiOiIzOWU0YzFhMC0zZjMzLTQ1NmQtYTE1Yy0yYzJmOWU5MGI2MGMiLCJhdWQiOiJhdXRoZW50aWNhdGVkIiwiaWF0IjoxNjgyOTQzMDQzLCJleHAiOjE3MTQ0NzkwNDN9.tf7c23efkk1GaWdWomsdMvS7_i7grw6CS3vI3J4FaVk'
+  process.env['INPUT_SLAUTH_PROJECT_ID'] =
+    '9944a0d2-a13d-4ae7-9276-518858194f3e'
   const np = process.execPath
   const ip = path.join(__dirname, '..', 'lib', 'main.js')
   const options: cp.ExecFileSyncOptions = {
