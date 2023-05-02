@@ -50,6 +50,31 @@ const path_1 = __nccwpck_require__(1017);
 const stream = __importStar(__nccwpck_require__(2781));
 const util_1 = __nccwpck_require__(3837);
 const finished = (0, util_1.promisify)(stream.finished);
+const SLAUTH_API_URL = 'https://staging.slauth.io';
+function getSlauthProjectId(token) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const repositoryName = process.env.GITHUB_REPOSITORY;
+        if (!repositoryName || repositoryName === '') {
+            core.error('No repository name found');
+        }
+        // Find from existing projects
+        const { found, id } = yield axios_1.default
+            .post(`${SLAUTH_API_URL}/api/projects/findByName`, { name: repositoryName }, { headers: { Authorization: `Bearer ${token}` } })
+            .then(({ data }) => data)
+            .catch(err => core.error(`Error finding project name: ${err}`));
+        if (found) {
+            return id;
+        }
+        else {
+            // Create project
+            const { id } = yield axios_1.default
+                .post(`${SLAUTH_API_URL}/api/projects/`, { name: repositoryName }, { headers: { Authorization: `Bearer ${token}` } })
+                .then(({ data }) => data.id)
+                .catch(err => core.error(`Error creating project: ${err}`));
+        }
+        return 'hello';
+    });
+}
 function downloadFile(fileUrl, outputLocationPath) {
     return __awaiter(this, void 0, void 0, function* () {
         const writer = (0, fs_1.createWriteStream)(outputLocationPath);
@@ -69,9 +94,8 @@ function downloadSlauth() {
 function generatePolicy(projectId, token) {
     return __awaiter(this, void 0, void 0, function* () {
         // TODO subs for env var
-        const iam_copilot_url = 'https://app.slauth.io';
         yield axios_1.default
-            .post(`${iam_copilot_url}/api/policies/generatePolicy`, { projectId }, { headers: { Authorization: `Bearer ${token}` } })
+            .post(`${SLAUTH_API_URL}/api/policies/generatePolicy`, { projectId }, { headers: { Authorization: `Bearer ${token}` } })
             .then(({ data }) => {
             core.info(`Policy generated: ${JSON.stringify(data)}`);
         })
@@ -180,7 +204,7 @@ function runMain() {
         core.saveState('slauth-post', 'true');
         try {
             const slauthToken = core.getInput('slauth_token');
-            const slauthProjectId = core.getInput('slauth_project_id');
+            const slauthProjectId = yield getSlauthProjectId(slauthToken);
             const run = core.getInput('run');
             // Download Slauth CLI
             yield downloadSlauth();
@@ -200,7 +224,7 @@ function runMain() {
 function runPost() {
     return __awaiter(this, void 0, void 0, function* () {
         const slauthToken = core.getInput('slauth_token');
-        const slauthProjectId = core.getInput('slauth_project_id');
+        const slauthProjectId = yield getSlauthProjectId(slauthToken);
         yield runSlauthStop(slauthToken);
         yield generatePolicy(slauthProjectId, slauthToken);
     });

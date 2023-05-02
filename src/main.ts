@@ -8,6 +8,37 @@ import * as stream from 'stream'
 import {promisify} from 'util'
 
 const finished = promisify(stream.finished)
+const SLAUTH_API_URL = 'https://staging.slauth.io'
+
+async function getSlauthProjectId(token: string): Promise<string> {
+  const repositoryName = process.env.GITHUB_REPOSITORY
+  if (!repositoryName || repositoryName === '') {
+    core.error('No repository name found')
+  }
+  // Find from existing projects
+  const {found, id} = await axios
+    .post(
+      `${SLAUTH_API_URL}/api/projects/findByName`,
+      {name: repositoryName},
+      {headers: {Authorization: `Bearer ${token}`}}
+    )
+    .then(({data}) => data)
+    .catch(err => core.error(`Error finding project name: ${err}`))
+  if (found) {
+    return id
+  } else {
+    // Create project
+    const {id} = await axios
+      .post(
+        `${SLAUTH_API_URL}/api/projects/`,
+        {name: repositoryName},
+        {headers: {Authorization: `Bearer ${token}`}}
+      )
+      .then(({data}) => data.id)
+      .catch(err => core.error(`Error creating project: ${err}`))
+  }
+  return 'hello'
+}
 
 async function downloadFile(
   fileUrl: string,
@@ -31,10 +62,9 @@ async function downloadSlauth(): Promise<void> {
 
 async function generatePolicy(projectId: string, token: string) {
   // TODO subs for env var
-  const iam_copilot_url = 'https://app.slauth.io'
   await axios
     .post(
-      `${iam_copilot_url}/api/policies/generatePolicy`,
+      `${SLAUTH_API_URL}/api/policies/generatePolicy`,
       {projectId},
       {headers: {Authorization: `Bearer ${token}`}}
     )
@@ -146,7 +176,7 @@ async function runMain(): Promise<void> {
   core.saveState('slauth-post', 'true')
   try {
     const slauthToken = core.getInput('slauth_token')
-    const slauthProjectId = core.getInput('slauth_project_id')
+    const slauthProjectId = await getSlauthProjectId(slauthToken)
     const run = core.getInput('run')
     // Download Slauth CLI
     await downloadSlauth()
@@ -163,7 +193,7 @@ async function runMain(): Promise<void> {
 
 async function runPost(): Promise<void> {
   const slauthToken = core.getInput('slauth_token')
-  const slauthProjectId = core.getInput('slauth_project_id')
+  const slauthProjectId = await getSlauthProjectId(slauthToken)
   await runSlauthStop(slauthToken)
   await generatePolicy(slauthProjectId, slauthToken)
 }
