@@ -5,9 +5,6 @@ inputs:
   slauth_token:
     required: true
     description: 'Token for your Slauth account'
-  slauth_project_id:
-    required: true
-    description: 'The ID of your project'
   run:
     required: true
     description: 'The end-to-end test to run'

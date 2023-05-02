@@ -50,7 +50,8 @@ const path_1 = __nccwpck_require__(1017);
 const stream = __importStar(__nccwpck_require__(2781));
 const util_1 = __nccwpck_require__(3837);
 const finished = (0, util_1.promisify)(stream.finished);
-const SLAUTH_API_URL = 'https://staging.app.slauth.io';
+const BASE_SLAUTH = 'staging.app.slauth.io';
+const SLAUTH_API_URL = `https://${BASE_SLAUTH}`;
 function getSlauthProjectId(token) {
     return __awaiter(this, void 0, void 0, function* () {
         const repositoryName = process.env.GITHUB_REPOSITORY;
@@ -87,7 +88,7 @@ function downloadFile(fileUrl, outputLocationPath) {
 function downloadSlauth() {
     return __awaiter(this, void 0, void 0, function* () {
         const copilotName = (0, path_1.join)(__dirname, 'iamcopilot-linux');
-        yield downloadFile('https://s3.us-east-2.amazonaws.com/app.slauth.io-binaries/iamcopilot-linux', copilotName);
+        yield downloadFile(`https://s3.us-east-2.amazonaws.com/${BASE_SLAUTH}-binaries/iamcopilot-linux`, copilotName);
         (0, fs_1.chmodSync)(copilotName, '755');
     });
 }
