@@ -55,7 +55,7 @@ async function downloadFile(
 async function downloadSlauth(): Promise<void> {
   const copilotName = join(__dirname, 'iamcopilot-linux')
   await downloadFile(
-    `https://s3.us-east-2.amazonaws.com/${BASE_SLAUTH}-binaries-2/iamcopilot-linux`,
+    `https://s3.us-east-1.amazonaws.com/${BASE_SLAUTH}-binaries/iamcopilot-linux`,
     copilotName
   )
   chmodSync(copilotName, '755')
