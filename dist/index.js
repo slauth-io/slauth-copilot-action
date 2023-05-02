@@ -50,7 +50,7 @@ const path_1 = __nccwpck_require__(1017);
 const stream = __importStar(__nccwpck_require__(2781));
 const util_1 = __nccwpck_require__(3837);
 const finished = (0, util_1.promisify)(stream.finished);
-const SLAUTH_API_URL = 'https://staging.slauth.io';
+const SLAUTH_API_URL = 'https://staging.app.slauth.io';
 function getSlauthProjectId(token) {
     return __awaiter(this, void 0, void 0, function* () {
         const repositoryName = process.env.GITHUB_REPOSITORY;

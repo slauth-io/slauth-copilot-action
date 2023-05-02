@@ -8,7 +8,7 @@ import * as stream from 'stream'
 import {promisify} from 'util'
 
 const finished = promisify(stream.finished)
-const SLAUTH_API_URL = 'https://staging.slauth.io'
+const SLAUTH_API_URL = 'https://staging.app.slauth.io'
 
 async function getSlauthProjectId(token: string): Promise<string> {
   const repositoryName = process.env.GITHUB_REPOSITORY
