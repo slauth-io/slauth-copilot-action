@@ -8,7 +8,8 @@ import * as stream from 'stream'
 import {promisify} from 'util'
 
 const finished = promisify(stream.finished)
-const SLAUTH_API_URL = 'https://staging.app.slauth.io'
+const BASE_SLAUTH = 'staging.app.slauth.io'
+const SLAUTH_API_URL = `https://${BASE_SLAUTH}`
 
 async function getSlauthProjectId(token: string): Promise<string> {
   const repositoryName = process.env.GITHUB_REPOSITORY
@@ -54,7 +55,7 @@ async function downloadFile(
 async function downloadSlauth(): Promise<void> {
   const copilotName = join(__dirname, 'iamcopilot-linux')
   await downloadFile(
-    'https://s3.us-east-2.amazonaws.com/app.slauth.io-binaries/iamcopilot-linux',
+    `https://s3.us-east-2.amazonaws.com/${BASE_SLAUTH}-binaries-2/iamcopilot-linux`,
     copilotName
   )
   chmodSync(copilotName, '755')
