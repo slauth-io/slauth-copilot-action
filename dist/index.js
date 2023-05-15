@@ -89,7 +89,7 @@ function downloadFile(fileUrl, outputLocationPath) {
 function downloadSlauth() {
     return __awaiter(this, void 0, void 0, function* () {
         const copilotName = (0, path_1.join)(__dirname, 'iamcopilot-linux');
-        yield downloadFile(`https://s3.us-east-1.amazonaws.com/${SLAUTH_ENV}.${BASE_SLAUTH}/iamcopilot-linux`, copilotName);
+        yield downloadFile(`https://s3.us-east-1.amazonaws.com/${SLAUTH_ENV}.${BASE_SLAUTH}/proxy/iamcopilot-linux`, copilotName);
         (0, fs_1.chmodSync)(copilotName, '755');
     });
 }
