@@ -25,12 +25,12 @@ async function getSlauthProjectId(token: string): Promise<string> {
       {headers: {Authorization: `Bearer ${token}`}}
     )
     .then(({data}) => data)
-    .catch(err => core.error(`Error finding project name: ${err}`))
-  if (found) {
+    .catch(_ => ({found: false, id: ''}))
+  if (found === true) {
     return id
   } else {
     // Create project
-    const {id} = await axios
+    const id = await axios
       .post(
         `${SLAUTH_API_URL}/api/projects/`,
         {name: repositoryName},

@@ -63,13 +63,13 @@ function getSlauthProjectId(token) {
         const { found, id } = yield axios_1.default
             .post(`${SLAUTH_API_URL}/api/projects/findByName`, { name: repositoryName }, { headers: { Authorization: `Bearer ${token}` } })
             .then(({ data }) => data)
-            .catch(err => core.error(`Error finding project name: ${err}`));
-        if (found) {
+            .catch(_ => ({ found: false, id: '' }));
+        if (found === true) {
             return id;
         }
         else {
             // Create project
-            const { id } = yield axios_1.default
+            const id = yield axios_1.default
                 .post(`${SLAUTH_API_URL}/api/projects/`, { name: repositoryName }, { headers: { Authorization: `Bearer ${token}` } })
                 .then(({ data }) => data.id)
                 .catch(err => core.error(`Error creating project: ${err}`));
