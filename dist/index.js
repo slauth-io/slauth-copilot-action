@@ -82,7 +82,7 @@ function downloadFile(fileUrl, outputLocationPath) {
         const writer = (0, fs_1.createWriteStream)(outputLocationPath);
         return axios_1.default.get(fileUrl, { responseType: 'stream' }).then(({ data }) => {
             data.pipe(writer);
-            return finished(writer); //this is a Promise
+            return finished(writer);
         });
     });
 }
@@ -106,13 +106,14 @@ function generatePolicy(projectId, token) {
         });
     });
 }
-function runTest(command) {
+function runTest(command, workingDirectory) {
     return __awaiter(this, void 0, void 0, function* () {
         return new Promise((resolve, reject) => {
             const splitCmd = command.split(' ');
             const testProcess = (0, child_process_1.spawn)(splitCmd[0], splitCmd.slice(1), {
                 shell: true,
                 detached: true,
+                cwd: workingDirectory || process.cwd(),
                 env: Object.assign(Object.assign({}, process.env), { HTTP_PROXY: 'http://localhost:10080', HTTPS_PROXY: 'http://localhost:10080', AWS_CA_BUNDLE: (0, path_1.join)(process.cwd(), '.http-mitm-proxy/certs/ca.pem') })
             });
             testProcess.stdout.on('data', data => {
@@ -207,6 +208,7 @@ function runMain() {
         core.saveState('slauth-post', 'true');
         try {
             const slauthToken = core.getInput('slauth_token');
+            const workingDirectory = core.getInput('working-directory');
             const slauthProjectId = yield getSlauthProjectId(slauthToken);
             const run = core.getInput('run');
             // Download Slauth CLI
@@ -216,7 +218,7 @@ function runMain() {
             yield runSlauth(slauthToken, slauthProjectId);
             core.info(`IAM Copilot Running`);
             core.setOutput('slauth_policy', 'my_policy');
-            yield runTest(run);
+            yield runTest(run, workingDirectory);
         }
         catch (error) {
             if (error instanceof Error)

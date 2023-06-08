@@ -8,6 +8,9 @@ inputs:
   run:
     required: true
     description: 'The end-to-end test to run'
+  working-directory:
+    required: false
+    description: 'The directory where to run the command'
 runs:
   using: 'node16'
   main: 'dist/index.js'

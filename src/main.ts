@@ -49,7 +49,7 @@ async function downloadFile(
   const writer = createWriteStream(outputLocationPath)
   return axios.get(fileUrl, {responseType: 'stream'}).then(({data}) => {
     data.pipe(writer)
-    return finished(writer) //this is a Promise
+    return finished(writer)
   })
 }
 
@@ -78,12 +78,16 @@ async function generatePolicy(projectId: string, token: string) {
     })
 }
 
-async function runTest(command: string): Promise<void> {
+async function runTest(
+  command: string,
+  workingDirectory?: string
+): Promise<void> {
   return new Promise((resolve, reject) => {
     const splitCmd = command.split(' ')
     const testProcess = spawn(splitCmd[0], splitCmd.slice(1), {
       shell: true,
       detached: true,
+      cwd: workingDirectory || process.cwd(),
       env: {
         ...process.env,
         HTTP_PROXY: 'http://localhost:10080',
@@ -179,6 +183,7 @@ async function runMain(): Promise<void> {
   core.saveState('slauth-post', 'true')
   try {
     const slauthToken = core.getInput('slauth_token')
+    const workingDirectory = core.getInput('working-directory')
     const slauthProjectId = await getSlauthProjectId(slauthToken)
     const run = core.getInput('run')
     // Download Slauth CLI
@@ -188,7 +193,7 @@ async function runMain(): Promise<void> {
     await runSlauth(slauthToken, slauthProjectId)
     core.info(`IAM Copilot Running`)
     core.setOutput('slauth_policy', 'my_policy')
-    await runTest(run)
+    await runTest(run, workingDirectory)
   } catch (error) {
     if (error instanceof Error) core.setFailed(error.message)
   }
